@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Image of the Day</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="date_format">dd/MM/yyyy</string>
+    <string name="loading">Carregando, aguarde...</string>
+    <string name="action_share">Share</string>
+
+</resources>

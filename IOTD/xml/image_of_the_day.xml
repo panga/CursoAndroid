@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" >
+
+    <channel>
+        <title>
+NASA Image of the Day
+        </title>
+
+        <link>
+http://www.nasa.gov/multimedia/imagegallery/index.html
+        </link>
+
+        <description>
+The latest NASA "Image of the Day" image.
+        </description>
+
+        <language>
+en-us
+        </language>
+
+        <docs>
+http://blogs.law.harvard.edu/tech/rss
+        </docs>
+
+        <managingEditor>
+yvette.smith-1@nasa.gov
+        </managingEditor>
+
+        <webMaster>
+brian.dunbar@nasa.gov
+        </webMaster>
+
+        <item xmlns:java_code="xalan://gov.nasa.build.Utils1">
+            <title>
+The Engine Burns Blue
+            </title>
+
+            <link>
+http://www.nasa.gov/multimedia/imagegallery/image_feature_2516.html
+            </link>
+
+            <description>
+This image shows a cutting-edge solar-electric propulsion thruster in development at NASA's Jet Propulsion Laboratory, Pasadena, Calif., that uses xenon ions for propulsion. An earlier version of this solar-electric propulsion engine has been flying on NASA's Dawn mission to the asteroid belt. This engine is being considered as part of the Asteroid Initiative, a proposal to robotically capture a small near-Earth asteroid and redirect it safely to a stable orbit in the Earth-moon system where astronauts can visit and explore it. This image was taken through a porthole in a vacuum chamber at JPL where the ion engine is being tested. &lt;em&gt;Image credit: NASA/JPL-Caltech&lt;/em&gt;
+            </description>
+
+            <guid isPermaLink="true" >
+http://www.nasa.gov/multimedia/imagegallery/image_feature_2516.html
+            </guid>
+
+            <pubDate>
+Fri, 24 May 2013 00:00:00 EDT
+            </pubDate>
+
+            <enclosure
+                length="1234567"
+                type="image/jpeg"
+                url="http://www.nasa.gov/images/content/751197main_ionengine_516-387.jpeg" />
+        </item>
+    </channel>
+
+</rss>
