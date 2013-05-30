@@ -65,6 +65,7 @@ public class DBAdapter {
 			if (item != null) {
 				items.add(item);
 			}
+			
 			c.moveToNext();
 		}
 

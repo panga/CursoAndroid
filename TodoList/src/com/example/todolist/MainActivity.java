@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -42,9 +43,11 @@ public class MainActivity extends Activity {
 				if (event.getAction() == KeyEvent.ACTION_DOWN) {
 					if ((keyCode == KeyEvent.KEYCODE_DPAD_CENTER)
 							|| (keyCode == KeyEvent.KEYCODE_ENTER)) {
-						dbAdapter.addTodo(new TodoItem(editText.getText()
-								.toString()));
-						refreshList();
+						if (editText.getText().toString().length() > 0) {
+							dbAdapter.addTodo(new TodoItem(editText.getText()
+									.toString()));
+							refreshList();
+						}
 						editText.setText("");
 						return true;
 					}
@@ -128,8 +131,7 @@ public class MainActivity extends Activity {
 
 			TodoItem todoItem = getItem(position);
 
-			ImageView doneView = (ImageView) convertView
-					.findViewById(R.id.done);
+			CheckBox doneView = (CheckBox) convertView.findViewById(R.id.done);
 			doneView.setOnClickListener(this);
 			doneView.setTag(todoItem);
 
@@ -143,7 +145,7 @@ public class MainActivity extends Activity {
 			rowView.setTag(todoItem);
 
 			if (todoItem.getDone() == 1) {
-				doneView.setImageResource(R.drawable.ic_undo);
+				doneView.setChecked(true);
 
 				SpannableString spanText = new SpannableString(
 						todoItem.getText());
@@ -151,7 +153,7 @@ public class MainActivity extends Activity {
 						.length(), 0);
 				rowView.setText(spanText, BufferType.SPANNABLE);
 			} else {
-				doneView.setImageResource(R.drawable.ic_done);
+				doneView.setChecked(false);
 
 				rowView.setText(todoItem.getText());
 			}

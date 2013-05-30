@@ -4,18 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <ImageView
-        android:id="@+id/done"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:paddingBottom="10dp"
-        android:paddingLeft="5dp"
-        android:paddingTop="8dp"
-        android:src="@drawable/ic_done" >
-    </ImageView>
-
     <TextView
         android:id="@+id/row"
         android:layout_width="wrap_content"
@@ -42,5 +30,14 @@
         android:paddingTop="8dp"
         android:src="@drawable/ic_discard" >
     </ImageView>
+
+    <CheckBox
+        android:id="@+id/done"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="5dp" 
+        android:layout_marginTop="5dp" />
 
 </RelativeLayout>
