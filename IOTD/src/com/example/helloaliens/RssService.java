@@ -34,9 +34,12 @@ public class RssService extends AsyncTask<RssHandler, Void, RssItem> {
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			SAXParser sp = spf.newSAXParser();
 			XMLReader xr = sp.getXMLReader();
-			URL url = new URL(handler.getFeedUrl());
 			xr.setContentHandler(handler);
+			
+			URL url = new URL(handler.getFeedUrl());
 			xr.parse(new InputSource(url.openStream()));
+			//xr.parse(new InputSource(activity.getAssets().open("image_of_the_day_2.rss")));
+			
 			item = handler.getItem();
 			if (item.getImageUrl() != null) {
 				item.setImage(getBitmap(item.getImageUrl()));
