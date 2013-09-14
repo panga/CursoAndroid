@@ -83,14 +83,14 @@ public class MainActivity extends RssActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.action_refresh:
-			refreshFeed();
-			return true;
-		case R.id.action_share:
-			shareFeed();
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
+			case R.id.action_refresh:
+				refreshFeed();
+				return true;
+			case R.id.action_share:
+				shareFeed();
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
 		}
 	}
 	

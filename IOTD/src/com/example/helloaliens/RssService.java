@@ -38,11 +38,12 @@ public class RssService extends AsyncTask<RssHandler, Void, RssItem> {
 			
 			URL url = new URL(handler.getFeedUrl());
 			xr.parse(new InputSource(url.openStream()));
-			//xr.parse(new InputSource(activity.getAssets().open("image_of_the_day_2.rss")));
-			
+			//xr.parse(new InputSource(activity.getAssets().open("image_of_the_day.xml")));
+
 			item = handler.getItem();
 			if (item.getImageUrl() != null) {
 				item.setImage(getBitmap(item.getImageUrl()));
+				//item.setImage(BitmapFactory.decodeResource(activity.getResources(), R.drawable.image_of_the_day));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
