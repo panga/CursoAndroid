@@ -40,7 +40,7 @@ public class RssService extends AsyncTask<RssHandler, Void, RssItem> {
 			xr.parse(new InputSource(url.openStream()));
 			//xr.parse(new InputSource(activity.getAssets().open("image_of_the_day.xml")));
 
-			item = handler.getItem();
+			item = handler.getFirstItem();
 			if (item.getImageUrl() != null) {
 				item.setImage(getBitmap(item.getImageUrl()));
 				//item.setImage(BitmapFactory.decodeResource(activity.getResources(), R.drawable.image_of_the_day));
