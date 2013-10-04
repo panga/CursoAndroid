@@ -8,5 +8,6 @@
     <string name="pref_listname_summary">Changes the list display name</string>
     <string name="pref_listname_title">List display name</string>
     <string name="pref_name">Settings</string>
+    <string name="remove_hint">Remove</string>
 
 </resources>

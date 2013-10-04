@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.text.SpannableString;
 import android.text.style.StrikethroughSpan;
@@ -15,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -25,8 +25,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements View.OnKeyListener, View.OnFocusChangeListener {
 
+	private EditText textAdd;
+	private EditText lastEdit;
 	private DBAdapter dbAdapter;
 
 	@Override
@@ -37,27 +39,11 @@ public class MainActivity extends Activity {
 		dbAdapter = new DBAdapter(this);
 		dbAdapter.open();
 
-		final EditText editText = (EditText) findViewById(R.id.text);
-		editText.setOnKeyListener(new View.OnKeyListener() {
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (event.getAction() == KeyEvent.ACTION_DOWN) {
-					if ((keyCode == KeyEvent.KEYCODE_DPAD_CENTER)
-							|| (keyCode == KeyEvent.KEYCODE_ENTER)) {
-						if (editText.getText().toString().length() > 0) {
-							dbAdapter.addTodo(new TodoItem(editText.getText()
-									.toString()));
-							refreshList();
-						}
-						editText.setText("");
-						return true;
-					}
-				}
-				return false;
+		textAdd = (EditText) findViewById(R.id.text_add);
+		textAdd.setOnKeyListener(this);
+		textAdd.setOnFocusChangeListener(this);
 
-			}
-		});
-
-		refreshList();
+		refreshList(true);
 	}
 
 	@Override
@@ -65,11 +51,10 @@ public class MainActivity extends Activity {
 		super.onResume();
 		displayName();
 	}
-
+	
 	public void displayName() {
 		SharedPreferences sharedPrefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
-
 		String displayName = sharedPrefs.getString("pref_listname", "");
 		if ("".equals(displayName)) {
 			displayName = getText(R.string.app_name).toString();
@@ -101,16 +86,26 @@ public class MainActivity extends Activity {
 		}
 	}
 
-	private void refreshList() {
-		List<TodoItem> todoItems = dbAdapter.retrieveTodos();
+	private void refreshList(boolean newItem) {
+		List<TodoItem> todoItems = dbAdapter.listTodos();
 		ArrayAdapter<TodoItem> listAdapter = new TodoAdapter(this,
 				R.layout.list_row, todoItems);
 		ListView listView = (ListView) findViewById(R.id.list);
+		
+		Parcelable state = null;
+		if (!newItem) {
+			state = listView.onSaveInstanceState();
+		} 
+		
 		listView.setAdapter(listAdapter);
+		
+		if (state != null) {
+			listView.onRestoreInstanceState(state);
+		}
 	}
 
 	private class TodoAdapter extends ArrayAdapter<TodoItem> implements
-			OnClickListener {
+			View.OnClickListener {
 
 		public TodoAdapter(Context context, int textViewResourceId,
 				List<TodoItem> objects) {
@@ -131,18 +126,18 @@ public class MainActivity extends Activity {
 
 			TodoItem todoItem = getItem(position);
 
-			CheckBox doneView = (CheckBox) convertView.findViewById(R.id.done);
+			CheckBox doneView = (CheckBox) convertView.findViewById(R.id.ic_done);
 			doneView.setOnClickListener(this);
 			doneView.setTag(todoItem);
 
 			ImageView removeView = (ImageView) convertView
-					.findViewById(R.id.remove);
+					.findViewById(R.id.ic_remove);
 			removeView.setTag(todoItem);
 			removeView.setOnClickListener(this);
 
-			TextView rowView = (TextView) convertView.findViewById(R.id.row);
-			rowView.setOnClickListener(this);
-			rowView.setTag(todoItem);
+			TextView textView = (TextView) convertView.findViewById(R.id.text_view);
+			textView.setOnClickListener(this);
+			textView.setTag(todoItem);
 
 			if (todoItem.getDone() == 1) {
 				doneView.setChecked(true);
@@ -151,11 +146,15 @@ public class MainActivity extends Activity {
 						todoItem.getText());
 				spanText.setSpan(new StrikethroughSpan(), 0, todoItem.getText()
 						.length(), 0);
-				rowView.setText(spanText, BufferType.SPANNABLE);
+				textView.setText(spanText, BufferType.SPANNABLE);
+				textView.setClickable(false);
+				textView.setFocusable(false);
 			} else {
 				doneView.setChecked(false);
 
-				rowView.setText(todoItem.getText());
+				textView.setText(todoItem.getText());
+				textView.setClickable(true);
+				textView.setFocusable(true);
 			}
 
 			return convertView;
@@ -166,20 +165,76 @@ public class MainActivity extends Activity {
 			TodoItem todoItem = (TodoItem) v.getTag();
 
 			if (todoItem != null) {
-				if (v.getId() == R.id.done) {
+				if (v.getId() == R.id.ic_done) {
 					if (todoItem.getDone() == 0) {
 						todoItem.setDone(1);
 					} else {
 						todoItem.setDone(0);
 					}
-					dbAdapter.updateTodo(todoItem);
-					refreshList();
+					dbAdapter.persistTodo(todoItem);
+					refreshList(false);
 
-				} else if (v.getId() == R.id.remove) {
+				} else if (v.getId() == R.id.ic_remove) {
 					dbAdapter.removeTodo(todoItem.getId());
-					refreshList();
+					refreshList(false);
+					
+				} else if (v.getId() == R.id.text_view) {
+					EditText textEdit = (EditText) ((View)v.getParent()).findViewById(R.id.text_edit);
+					textEdit.setText(((TextView)v).getText());
+					textEdit.setTag(v);
+					textEdit.setOnKeyListener(MainActivity.this);
+					textEdit.setOnFocusChangeListener(MainActivity.this);
+					textEdit.setVisibility(EditText.VISIBLE);
+					v.setVisibility(TextView.INVISIBLE);
 				}
+			} 
+		}
+	}
+	
+	@Override
+	public boolean onKey(View v, int keyCode, KeyEvent event) {		
+		if (event.getAction() == KeyEvent.ACTION_DOWN) {
+			if ((keyCode == KeyEvent.KEYCODE_DPAD_CENTER)
+					|| (keyCode == KeyEvent.KEYCODE_ENTER)) {
+				
+				editChanged((EditText) v);
+				textAdd.requestFocus();
+				return true;
 			}
+		}
+		
+		return false;
+	}
+
+	@Override
+	public void onFocusChange(View v, boolean hasFocus) {	
+		if (hasFocus && lastEdit != v) {
+			if (lastEdit != null && lastEdit.getId() == R.id.text_edit) {
+				editChanged(lastEdit);
+			}
+			lastEdit = (EditText)v;
+		}
+	}
+	
+	public void editChanged(EditText editText) {
+		if (editText.length() > 0) {	
+			if (editText.getTag() != null) {
+				TextView text = (TextView)editText.getTag();
+				text.setVisibility(TextView.VISIBLE);
+				text.setText(editText.getText());
+				editText.setVisibility(EditText.INVISIBLE);
+				
+				TodoItem item = (TodoItem)text.getTag();
+				item.setText(text.getText().toString());
+				dbAdapter.persistTodo(item);
+			} else {
+				dbAdapter.persistTodo(new TodoItem(editText.getText()
+						.toString()));
+				refreshList(true);
+			}
+			
+			editText.setText("");
+			editText.setTag(null);
 		}
 	}
 

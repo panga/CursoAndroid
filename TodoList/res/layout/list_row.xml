@@ -5,34 +5,46 @@
     android:layout_height="match_parent" >
 
     <TextView
-        android:id="@+id/row"
+        android:id="@+id/text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/remove"
-        android:layout_toRightOf="@+id/done"
+        android:layout_toLeftOf="@+id/ic_remove"
+        android:layout_toRightOf="@+id/ic_done"
         android:paddingBottom="10dp"
         android:paddingLeft="5dp"
-        android:paddingTop="10dp"
-        android:text="Todo item with long text inside..."
-        android:textSize="18dp" >
-
-    </TextView>
-
+        android:paddingTop="11dp"
+        android:textSize="18sp" />
+        
+    <EditText
+        android:id="@+id/text_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/ic_remove"
+        android:layout_toRightOf="@+id/ic_done"
+        android:paddingBottom="10dp"
+        android:paddingLeft="5dp"
+        android:paddingTop="11dp"
+        android:textSize="18sp"
+        android:background="@null"
+        android:hint=""
+        android:visibility="invisible" />
+        
     <ImageView
-        android:id="@+id/remove"
+        android:id="@+id/ic_remove"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:contentDescription="@string/remove_hint"
         android:paddingBottom="10dp"
         android:paddingRight="5dp"
         android:paddingTop="8dp"
-        android:src="@drawable/ic_discard" >
-    </ImageView>
+        android:src="@drawable/ic_discard" />
 
     <CheckBox
-        android:id="@+id/done"
+        android:id="@+id/ic_done"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"

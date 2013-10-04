@@ -28,11 +28,17 @@ public class DBAdapter {
 		dbHelper.close();
 	}
 
-	public long addTodo(TodoItem todoItem) {
+	public boolean persistTodo(TodoItem todoItem) {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(DBHelper.COLUMN_TODO, todoItem.getText());
 		initialValues.put(DBHelper.COLUMN_DONE, todoItem.getDone());
-		return db.insert(DBHelper.DATABASE_TABLE, null, initialValues);
+		
+		if (todoItem.getId() == null) {
+			return db.insert(DBHelper.DATABASE_TABLE, null, initialValues) > 0;
+		} else {
+			return db.update(DBHelper.DATABASE_TABLE, initialValues,
+					DBHelper.COLUMN_ID + " = " + todoItem.getId(), null) > 0;
+		}
 	}
 
 	public boolean removeTodo(long id) {
@@ -40,15 +46,7 @@ public class DBAdapter {
 				+ id, null) > 0;
 	}
 
-	public boolean updateTodo(TodoItem todoItem) {
-		ContentValues initialValues = new ContentValues();
-		initialValues.put(DBHelper.COLUMN_TODO, todoItem.getText());
-		initialValues.put(DBHelper.COLUMN_DONE, todoItem.getDone());
-		return db.update(DBHelper.DATABASE_TABLE, initialValues,
-				DBHelper.COLUMN_ID + " = " + todoItem.getId(), null) > 0;
-	}
-
-	public List<TodoItem> retrieveTodos() {
+	public List<TodoItem> listTodos() {
 		List<TodoItem> items = new ArrayList<TodoItem>();
 
 		Cursor c = db.query(DBHelper.DATABASE_TABLE,

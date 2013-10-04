@@ -1,7 +1,7 @@
 package com.example.todolist;
 
 public class TodoItem {
-	private long id;
+	private Long id;
 	private String text;
 	private int done;
 
@@ -13,11 +13,11 @@ public class TodoItem {
 		setDone(0);
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

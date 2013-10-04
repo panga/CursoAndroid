@@ -5,7 +5,7 @@
         <EditTextPreference
             android:key="pref_listname"
             android:summary="@string/pref_listname_summary"
-            android:title="@string/pref_listname_title" />
+            android:title="@string/pref_listname_title" android:defaultValue="@string/app_name"/>
     </PreferenceCategory>
 
 </PreferenceScreen>
