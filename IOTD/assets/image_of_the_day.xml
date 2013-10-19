@@ -27,7 +27,7 @@
 
             <pubDate>Fri, 24 May 2013 00:00:00 EDT</pubDate>
 
-            <enclosure length="1234567" type="image/jpeg" url="http://www.nasa.gov/images/content/751197main_ionengine_516-387.jpeg" />
+            <enclosure length="1234567" type="image/jpeg" url="https://raw.github.com/panga/CursoAndroid/master/IOTD/res/drawable-hdpi/image_of_the_day.jpg" />
         </item>
     </channel>
 

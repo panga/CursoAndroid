@@ -1,6 +1,6 @@
 package com.example.todolist;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -47,7 +47,7 @@ public class DBAdapter {
 	}
 
 	public List<TodoItem> listTodos() {
-		List<TodoItem> items = new ArrayList<TodoItem>();
+		List<TodoItem> items = new LinkedList<TodoItem>();
 
 		Cursor c = db.query(DBHelper.DATABASE_TABLE,
 				new String[] { DBHelper.COLUMN_ID, DBHelper.COLUMN_TODO,

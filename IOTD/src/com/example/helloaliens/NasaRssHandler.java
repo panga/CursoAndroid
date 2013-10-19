@@ -55,7 +55,8 @@ public class NasaRssHandler extends RssHandler {
 
 	@Override
 	public String getFeedUrl() {
-		return "http://www.nasa.gov/rss/image_of_the_day.rss";
+		//return "http://www.nasa.gov/rss/image_of_the_day.rss";
+		return "https://raw.github.com/panga/CursoAndroid/master/IOTD/assets/image_of_the_day.xml";
 	}
 
 }

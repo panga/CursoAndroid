@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.text.SpannableString;
 import android.text.style.StrikethroughSpan;
@@ -25,11 +24,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
-public class MainActivity extends Activity implements View.OnKeyListener, View.OnFocusChangeListener {
+public class MainActivity extends Activity implements View.OnKeyListener,
+		View.OnFocusChangeListener {
 
 	private EditText textAdd;
 	private EditText lastEdit;
 	private DBAdapter dbAdapter;
+	private TodoAdapter listAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,11 +40,14 @@ public class MainActivity extends Activity implements View.OnKeyListener, View.O
 		dbAdapter = new DBAdapter(this);
 		dbAdapter.open();
 
+		List<TodoItem> todoList = dbAdapter.listTodos();
+		listAdapter = new TodoAdapter(this, R.layout.list_row, todoList);
+		ListView listView = (ListView) findViewById(R.id.list);
+		listView.setAdapter(listAdapter);
+
 		textAdd = (EditText) findViewById(R.id.text_add);
 		textAdd.setOnKeyListener(this);
 		textAdd.setOnFocusChangeListener(this);
-
-		refreshList(true);
 	}
 
 	@Override
@@ -51,7 +55,7 @@ public class MainActivity extends Activity implements View.OnKeyListener, View.O
 		super.onResume();
 		displayName();
 	}
-	
+
 	public void displayName() {
 		SharedPreferences sharedPrefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
@@ -86,22 +90,13 @@ public class MainActivity extends Activity implements View.OnKeyListener, View.O
 		}
 	}
 
-	private void refreshList(boolean newItem) {
-		List<TodoItem> todoItems = dbAdapter.listTodos();
-		ArrayAdapter<TodoItem> listAdapter = new TodoAdapter(this,
-				R.layout.list_row, todoItems);
-		ListView listView = (ListView) findViewById(R.id.list);
-		
-		Parcelable state = null;
-		if (!newItem) {
-			state = listView.onSaveInstanceState();
-		} 
-		
-		listView.setAdapter(listAdapter);
-		
-		if (state != null) {
-			listView.onRestoreInstanceState(state);
+	private void refreshList() {
+		listAdapter.clear();
+		List<TodoItem> list = dbAdapter.listTodos();
+		for (TodoItem item : list) {
+			listAdapter.add(item);
 		}
+		listAdapter.notifyDataSetChanged();
 	}
 
 	private class TodoAdapter extends ArrayAdapter<TodoItem> implements
@@ -126,7 +121,8 @@ public class MainActivity extends Activity implements View.OnKeyListener, View.O
 
 			TodoItem todoItem = getItem(position);
 
-			CheckBox doneView = (CheckBox) convertView.findViewById(R.id.ic_done);
+			CheckBox doneView = (CheckBox) convertView
+					.findViewById(R.id.ic_done);
 			doneView.setOnClickListener(this);
 			doneView.setTag(todoItem);
 
@@ -135,7 +131,8 @@ public class MainActivity extends Activity implements View.OnKeyListener, View.O
 			removeView.setTag(todoItem);
 			removeView.setOnClickListener(this);
 
-			TextView textView = (TextView) convertView.findViewById(R.id.text_view);
+			TextView textView = (TextView) convertView
+					.findViewById(R.id.text_view);
 			textView.setOnClickListener(this);
 			textView.setTag(todoItem);
 
@@ -172,67 +169,67 @@ public class MainActivity extends Activity implements View.OnKeyListener, View.O
 						todoItem.setDone(0);
 					}
 					dbAdapter.persistTodo(todoItem);
-					refreshList(false);
+					refreshList();
 
 				} else if (v.getId() == R.id.ic_remove) {
 					dbAdapter.removeTodo(todoItem.getId());
-					refreshList(false);
-					
+					refreshList();
+
 				} else if (v.getId() == R.id.text_view) {
-					EditText textEdit = (EditText) ((View)v.getParent()).findViewById(R.id.text_edit);
-					textEdit.setText(((TextView)v).getText());
+					EditText textEdit = (EditText) ((View) v.getParent())
+							.findViewById(R.id.text_edit);
+					textEdit.setText(((TextView) v).getText());
 					textEdit.setTag(v);
 					textEdit.setOnKeyListener(MainActivity.this);
 					textEdit.setOnFocusChangeListener(MainActivity.this);
 					textEdit.setVisibility(EditText.VISIBLE);
 					v.setVisibility(TextView.INVISIBLE);
 				}
-			} 
+			}
 		}
 	}
-	
+
 	@Override
-	public boolean onKey(View v, int keyCode, KeyEvent event) {		
+	public boolean onKey(View v, int keyCode, KeyEvent event) {
 		if (event.getAction() == KeyEvent.ACTION_DOWN) {
 			if ((keyCode == KeyEvent.KEYCODE_DPAD_CENTER)
 					|| (keyCode == KeyEvent.KEYCODE_ENTER)) {
-				
+
 				editChanged((EditText) v);
 				textAdd.requestFocus();
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
 	@Override
-	public void onFocusChange(View v, boolean hasFocus) {	
+	public void onFocusChange(View v, boolean hasFocus) {
 		if (hasFocus && lastEdit != v) {
 			if (lastEdit != null && lastEdit.getId() == R.id.text_edit) {
 				editChanged(lastEdit);
 			}
-			lastEdit = (EditText)v;
+			lastEdit = (EditText) v;
 		}
 	}
-	
+
 	public void editChanged(EditText editText) {
-		if (editText.length() > 0) {	
+		if (editText.length() > 0) {
 			if (editText.getTag() != null) {
-				TextView text = (TextView)editText.getTag();
+				TextView text = (TextView) editText.getTag();
 				text.setVisibility(TextView.VISIBLE);
-				text.setText(editText.getText());
 				editText.setVisibility(EditText.INVISIBLE);
-				
-				TodoItem item = (TodoItem)text.getTag();
-				item.setText(text.getText().toString());
+
+				TodoItem item = (TodoItem) text.getTag();
+				item.setText(editText.getText().toString());
 				dbAdapter.persistTodo(item);
 			} else {
 				dbAdapter.persistTodo(new TodoItem(editText.getText()
-						.toString()));
-				refreshList(true);
+						.toString()));	
 			}
-			
+			refreshList();
+
 			editText.setText("");
 			editText.setTag(null);
 		}
