@@ -1,4 +1,4 @@
-package com.example.helloaliens;
+package com.example.iotd;
 
 import java.util.ArrayList;
 import java.util.List;

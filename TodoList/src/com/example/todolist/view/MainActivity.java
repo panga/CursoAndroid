@@ -1,6 +1,11 @@
-package com.example.todolist;
+package com.example.todolist.view;
 
 import java.util.List;
+
+import com.example.todolist.R;
+import com.example.todolist.model.TodoDAO;
+import com.example.todolist.model.TodoItem;
+import com.example.todolist.model.TodoSQLite;
 
 import android.app.Activity;
 import android.content.Context;
@@ -27,21 +32,23 @@ import android.widget.TextView.BufferType;
 public class MainActivity extends Activity implements View.OnKeyListener,
 		View.OnFocusChangeListener {
 
+	private TodoSQLite todoDb;
+	private TodoDAO todoDao;
+
+	private TodoListAdapter listAdapter;
 	private EditText textAdd;
 	private EditText lastEdit;
-	private DBAdapter dbAdapter;
-	private TodoAdapter listAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		dbAdapter = new DBAdapter(this);
-		dbAdapter.open();
+		todoDb = new TodoSQLite(this);
+		todoDao = new TodoDAO(todoDb.getWritableDatabase());
 
-		List<TodoItem> todoList = dbAdapter.listTodos();
-		listAdapter = new TodoAdapter(this, R.layout.list_row, todoList);
+		listAdapter = new TodoListAdapter(this, R.layout.list_row,
+				todoDao.list());
 		ListView listView = (ListView) findViewById(R.id.list);
 		listView.setAdapter(listAdapter);
 
@@ -70,7 +77,7 @@ public class MainActivity extends Activity implements View.OnKeyListener,
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		dbAdapter.close();
+		todoDb.close();
 	}
 
 	@Override
@@ -92,17 +99,17 @@ public class MainActivity extends Activity implements View.OnKeyListener,
 
 	private void refreshList() {
 		listAdapter.clear();
-		List<TodoItem> list = dbAdapter.listTodos();
+		List<TodoItem> list = todoDao.list();
 		for (TodoItem item : list) {
 			listAdapter.add(item);
 		}
 		listAdapter.notifyDataSetChanged();
 	}
 
-	private class TodoAdapter extends ArrayAdapter<TodoItem> implements
+	private class TodoListAdapter extends ArrayAdapter<TodoItem> implements
 			View.OnClickListener {
 
-		public TodoAdapter(Context context, int textViewResourceId,
+		public TodoListAdapter(Context context, int textViewResourceId,
 				List<TodoItem> objects) {
 			super(context, textViewResourceId, objects);
 		}
@@ -168,11 +175,11 @@ public class MainActivity extends Activity implements View.OnKeyListener,
 					} else {
 						todoItem.setDone(0);
 					}
-					dbAdapter.persistTodo(todoItem);
+					todoDao.persist(todoItem);
 					refreshList();
 
 				} else if (v.getId() == R.id.ic_remove) {
-					dbAdapter.removeTodo(todoItem.getId());
+					todoDao.remove(todoItem.getId());
 					refreshList();
 
 				} else if (v.getId() == R.id.text_view) {
@@ -223,10 +230,9 @@ public class MainActivity extends Activity implements View.OnKeyListener,
 
 				TodoItem item = (TodoItem) text.getTag();
 				item.setText(editText.getText().toString());
-				dbAdapter.persistTodo(item);
+				todoDao.persist(item);
 			} else {
-				dbAdapter.persistTodo(new TodoItem(editText.getText()
-						.toString()));	
+				todoDao.persist(new TodoItem(editText.getText().toString()));
 			}
 			refreshList();
 

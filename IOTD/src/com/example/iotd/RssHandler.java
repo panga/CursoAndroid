@@ -1,4 +1,4 @@
-package com.example.helloaliens;
+package com.example.iotd;
 
 import org.xml.sax.helpers.DefaultHandler;
 

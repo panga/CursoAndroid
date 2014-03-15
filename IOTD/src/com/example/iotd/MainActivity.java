@@ -1,4 +1,4 @@
-package com.example.helloaliens;
+package com.example.iotd;
 
 import java.text.DateFormat;
 import java.text.ParseException;

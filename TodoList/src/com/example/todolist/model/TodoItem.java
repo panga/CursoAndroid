@@ -1,4 +1,4 @@
-package com.example.todolist;
+package com.example.todolist.model;
 
 public class TodoItem {
 	private Long id;
@@ -7,7 +7,7 @@ public class TodoItem {
 
 	public TodoItem() {
 	}
-	
+
 	public TodoItem(String text) {
 		setText(text);
 		setDone(0);
